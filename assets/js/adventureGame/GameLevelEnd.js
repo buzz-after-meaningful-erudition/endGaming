@@ -3,12 +3,13 @@ import BackgroundParallax from './GameEngine/BackgroundParallax.js';
 import Player from './GameEngine/Player.js';
 import Npc from './GameEngine/Npc.js';
 import Quiz from './Quiz.js';
-
+import Block from './Block.js';  // Import the Block class
 
 class GameLevelEnd {
   constructor(gameEnv) {
     console.log("Initializing GameLevelEnd....");
     
+    this.gameEnv = gameEnv;  // Store the gameEnv reference for use in other methods
     let width = gameEnv.innerWidth;
     let height = gameEnv.innerHeight;
     let path = gameEnv.path;
@@ -125,6 +126,89 @@ class GameLevelEnd {
       { class: Npc, data: sprite_data_tux },
       { class: Player, data: sprite_data_alex }
     ];
+    
+    // Initialize blocks array
+    this.blocks = [];
+    
+    // Set up block spawn timer
+    this.blockSpawnInterval = 2000; // Spawn a new block every 2 seconds
+    this.lastBlockSpawnTime = 0;
+    this.maxBlocks = 20; // Maximum number of blocks on screen at once
+    
+    // Start the block animation loop
+    this.startBlockAnimation();
+  }
+  
+  // Method to handle block spawning and animation
+  startBlockAnimation() {
+    // Set up animation frame loop
+    this.animationFrameId = requestAnimationFrame(this.updateBlocks.bind(this));
+    
+    // Set up block spawner interval
+    this.blockSpawnerId = setInterval(() => {
+      this.spawnBlock();
+    }, this.blockSpawnInterval);
+  }
+  
+  // Method to spawn a new block
+  spawnBlock() {
+    // Check if we've hit the maximum number of blocks
+    if (this.blocks.length < this.maxBlocks) {
+      const newBlock = new Block(this.gameEnv);
+      this.blocks.push(newBlock);
+    }
+  }
+  
+  // Method to update all blocks
+  updateBlocks() {
+    // Update each block
+    for (let i = this.blocks.length - 1; i >= 0; i--) {
+      const block = this.blocks[i];
+      block.update();
+      
+      // Check for collisions with players or NPCs
+      // Add collision detection code here if needed
+    }
+    
+    // Clean up blocks that have fallen off screen multiple times
+    this.blocks = this.blocks.filter(block => {
+      // Remove blocks that have fallen too many times (arbitrary limit)
+      if (block.fallCount > 10) {
+        block.destroy();
+        return false;
+      }
+      return true;
+    });
+    
+    // Continue the animation loop
+    this.animationFrameId = requestAnimationFrame(this.updateBlocks.bind(this));
+  }
+  
+  // Method to clean up resources when level ends
+  cleanup() {
+    // Cancel animation frame
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+    
+    // Clear block spawner interval
+    if (this.blockSpawnerId) {
+      clearInterval(this.blockSpawnerId);
+    }
+    
+    // Destroy all blocks
+    this.blocks.forEach(block => {
+      block.destroy();
+    });
+    this.blocks = [];
+  }
+  
+  // Add this method if the game engine requires it
+  initialize() {
+    // Spawn initial blocks
+    for (let i = 0; i < 5; i++) {
+      this.spawnBlock();
+    }
   }
 }
 
