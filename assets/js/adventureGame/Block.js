@@ -118,27 +118,6 @@ class Block {
       }
     }
     
-    // Check collision with player
-    checkCollision(player) {
-      if (!player || !player.position) return false;
-      
-      // Get player hitbox dimensions
-      const playerWidth = player.width * player.hitbox.widthPercentage;
-      const playerHeight = player.height * player.hitbox.heightPercentage;
-      
-      // Calculate hitbox positions (centered on player)
-      const playerX = player.position.x + (player.width - playerWidth) / 2;
-      const playerY = player.position.y + (player.height - playerHeight);
-      
-      // Check for overlap between player hitbox and block
-      return (
-        playerX < this.x + this.width &&
-        playerX + playerWidth > this.x &&
-        playerY < this.y + this.height &&
-        playerY + playerHeight > this.y
-      );
-    }
-    
     // Clean up when block is no longer needed
     destroy() {
       if (this.element && this.element.parentNode) {
