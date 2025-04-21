@@ -23,20 +23,23 @@ class Block {
       // State flags
       this.isBouncing = false;
       
-      // Random color generation for visual variety
-      this.colors = ['crimson', 'royalblue', 'limegreen', 'mediumslateblue', 'darkorange', 'gold', 'deeppink', 'turquoise', 'tomato', 'springgreen', 'indigo', 'orchid', 'salmon', 'steelblue', 'chartreuse', 'coral', 'cyan', 'fuchsia', 'navy', 'firebrick'];
-      this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
-      
       // Create HTML element for the block
       this.element = document.createElement('div');
       this.element.style.position = 'absolute';
       this.element.style.width = this.width + 'px';
       this.element.style.height = this.height + 'px';
-      this.element.style.backgroundColor = this.color;
-      this.element.style.transition = 'background-color 0.3s';
       this.element.style.zIndex = '100'; // Make sure blocks appear above background
       this.element.style.borderRadius = '5px'; // Rounded corners
       this.element.style.boxShadow = '2px 2px 5px rgba(0,0,0,0.3)'; // Drop shadow for depth
+      
+      // Create and add the image
+      this.image = document.createElement('img');
+      this.image.src = 'images/gamify/endeye.png';
+      this.image.style.width = '100%';
+      this.image.style.height = '100%';
+      this.image.style.objectFit = 'cover'; // Ensures the image covers the div properly
+      this.element.appendChild(this.image);
+      
       document.body.appendChild(this.element);
     }
   
@@ -105,16 +108,23 @@ class Block {
       this.baseSpeed += 0.1;
       this.acceleration += 0.01;
       
-      // Change color on each reset
-      this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
-      this.element.style.backgroundColor = this.color;
+      // Add a spin animation for visual interest when resetting
+      this.element.style.transition = 'transform 0.5s';
+      this.element.style.transform = 'rotate(360deg)';
+      
+      // Remove the transition after the animation
+      setTimeout(() => {
+        this.element.style.transition = '';
+      }, 500);
     }
   
     render(ctx) {
       // If using canvas for rendering
       if (ctx) {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        // Draw the image instead of a rectangle
+        const img = new Image();
+        img.src = 'images/gamify/endeye.png';
+        ctx.drawImage(img, this.x, this.y, this.width, this.height);
       }
     }
     
