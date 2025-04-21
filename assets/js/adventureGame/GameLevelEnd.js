@@ -7,7 +7,7 @@ import Quiz from './Quiz.js';
 
 class GameLevelEnd {
   constructor(gameEnv) {
-    console.log("Initializing GameLevelEnd...");
+    console.log("Initializing GameLevelEnd....");
     
     let width = gameEnv.innerWidth;
     let height = gameEnv.innerHeight;
