@@ -3,12 +3,13 @@ import BackgroundParallax from './GameEngine/BackgroundParallax.js';
 import Player from './GameEngine/Player.js';
 import Npc from './GameEngine/Npc.js';
 import Quiz from './Quiz.js';
-
+import Block from './Block.js'; // Import the Block class
 
 class GameLevelEnd {
   constructor(gameEnv) {
-    console.log("Initializing GameLevelEnd....");
+    console.log("Initializing GameLevelEnd...");
     
+    this.gameEnv = gameEnv; // Store gameEnv reference for later use
     let width = gameEnv.innerWidth;
     let height = gameEnv.innerHeight;
     let path = gameEnv.path;
@@ -118,6 +119,20 @@ class GameLevelEnd {
         }
     };
     
+    // Store configuration for blocks
+    this.blockConfig = {
+      count: 10, // Number of blocks to create
+      spawnInterval: 2000, // Time between new blocks in milliseconds
+      collisionCallback: this.handleBlockCollision.bind(this) // Function to call on collision
+    };
+    
+    this.blocks = []; // Array to store active blocks
+    this.players = []; // Will store player references for collision detection
+    this.lastBlockSpawnTime = 0; // Track when the last block was spawned
+    this.gameStartTime = Date.now(); // Track game start time
+    this.score = 0; // Initialize score
+    this.gameActive = true; // Flag to track if game is running
+    
     this.classes = [
       { class: BackgroundParallax, data: image_data_parallax },  // Add parallax background first
       { class: GamEnvBackground, data: image_data_end },         // Then regular background
@@ -125,6 +140,157 @@ class GameLevelEnd {
       { class: Npc, data: sprite_data_tux },
       { class: Player, data: sprite_data_alex }
     ];
+  }
+
+  // Method to initialize blocks after players are created
+  initialize(gameObjects) {
+    // Store references to player objects for collision detection
+    this.players = gameObjects.filter(obj => obj instanceof Player);
+    
+    // Create initial blocks
+    this.createInitialBlocks();
+    
+    // Set up score display
+    this.createScoreDisplay();
+    
+    // Start the block update loop
+    this.startBlockLoop();
+  }
+  
+  // Create initial set of blocks
+  createInitialBlocks() {
+    // Create just a few blocks to start with to prevent overwhelming the player
+    for (let i = 0; i < 3; i++) {
+      const block = new Block(this.gameEnv);
+      // Stagger initial positions
+      block.y = -block.height - (i * 300);
+      this.blocks.push(block);
+    }
+  }
+  
+  // Create a score display element
+  createScoreDisplay() {
+    this.scoreElement = document.createElement('div');
+    this.scoreElement.style.position = 'absolute';
+    this.scoreElement.style.top = '20px';
+    this.scoreElement.style.right = '20px';
+    this.scoreElement.style.fontSize = '24px';
+    this.scoreElement.style.fontWeight = 'bold';
+    this.scoreElement.style.color = 'white';
+    this.scoreElement.style.textShadow = '2px 2px 4px #000000';
+    this.scoreElement.style.zIndex = '1000';
+    this.updateScore(0);
+    document.body.appendChild(this.scoreElement);
+  }
+  
+  // Update the score display
+  updateScore(points) {
+    this.score += points;
+    if (this.scoreElement) {
+      this.scoreElement.textContent = `Score: ${this.score}`;
+    }
+  }
+  
+  // Handle collisions between blocks and players
+  handleBlockCollision(player, block) {
+    console.log(`Collision detected between ${player.data.id} and block!`);
+    
+    // Subtract points when hit by a block
+    this.updateScore(-10);
+    
+    // Visual feedback - flash the player
+    if (player.sprite && player.sprite.style) {
+      // Store original opacity
+      const originalOpacity = player.sprite.style.opacity || '1';
+      
+      // Flash effect
+      player.sprite.style.opacity = '0.3';
+      setTimeout(() => {
+        player.sprite.style.opacity = originalOpacity;
+      }, 300);
+    }
+    
+    // Remove the block that hit the player
+    const blockIndex = this.blocks.indexOf(block);
+    if (blockIndex !== -1) {
+      block.destroy();
+      this.blocks.splice(blockIndex, 1);
+    }
+    
+    // Create a new block to replace the removed one
+    setTimeout(() => {
+      if (this.gameActive) {
+        const newBlock = new Block(this.gameEnv);
+        newBlock.y = -newBlock.height - Math.random() * 200;
+        this.blocks.push(newBlock);
+      }
+    }, 1000);
+  }
+  
+  // Main update loop for blocks
+  startBlockLoop() {
+    this.blockLoopInterval = setInterval(() => {
+      this.updateBlocks();
+      
+      // Spawn new blocks periodically
+      const currentTime = Date.now();
+      if (currentTime - this.lastBlockSpawnTime > this.blockConfig.spawnInterval && 
+          this.blocks.length < this.blockConfig.count) {
+        this.spawnNewBlock();
+        this.lastBlockSpawnTime = currentTime;
+        
+        // Gradually decrease spawn interval for increasing difficulty
+        this.blockConfig.spawnInterval = Math.max(500, this.blockConfig.spawnInterval - 50);
+      }
+      
+      // Add points over time for surviving
+      if (currentTime - this.gameStartTime > 5000) {
+        this.updateScore(1);
+        this.gameStartTime = currentTime;
+      }
+    }, 16); // ~60fps
+  }
+  
+  // Update all active blocks
+  updateBlocks() {
+    for (let i = this.blocks.length - 1; i >= 0; i--) {
+      const block = this.blocks[i];
+      block.update();
+      
+      // Check for collisions with players
+      this.players.forEach(player => {
+        if (block.checkCollision(player)) {
+          this.blockConfig.collisionCallback(player, block);
+        }
+      });
+    }
+  }
+  
+  // Spawn a new block
+  spawnNewBlock() {
+    if (this.blocks.length < this.blockConfig.count) {
+      const block = new Block(this.gameEnv);
+      this.blocks.push(block);
+    }
+  }
+  
+  // Clean up when level is unloaded
+  cleanup() {
+    // Clear block update loop
+    if (this.blockLoopInterval) {
+      clearInterval(this.blockLoopInterval);
+    }
+    
+    // Remove all blocks
+    this.blocks.forEach(block => block.destroy());
+    this.blocks = [];
+    
+    // Remove score display
+    if (this.scoreElement && this.scoreElement.parentNode) {
+      this.scoreElement.parentNode.removeChild(this.scoreElement);
+    }
+    
+    this.gameActive = false;
   }
 }
 
