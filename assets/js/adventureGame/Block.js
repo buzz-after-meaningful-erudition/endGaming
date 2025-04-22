@@ -8,6 +8,10 @@ class Block {
       this.x = Math.random() * (gameEnv.innerWidth - this.width);
       this.y = 0; // Start from top of the screen
       
+      // Horizontal movement properties
+      this.horizontalSpeed = (Math.random() - 0.5) * 5; // Random horizontal speed (-2.5 to 2.5)
+      this.horizontalAcceleration = 0; // Can be used for curved paths
+      
       // Speed and physics properties
       this.baseSpeed = 1; // Initial falling speed
       this.speed = this.baseSpeed;
@@ -25,7 +29,7 @@ class Block {
       
       // Array of image URLs to use
       this.imageUrls = [
-        'https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/7a/Eye_of_Ender_JE2_BE2.png', // Star
+        'https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/7a/Eye_of_Ender_JE2_BE2.png', // Eye of Ender
       ];
       
       // Select a random image URL
@@ -40,10 +44,24 @@ class Block {
       this.element.style.zIndex = '100'; // Make sure images appear above background
       this.element.style.filter = 'drop-shadow(2px 2px 3px rgba(0,0,0,0.3))'; // Add drop shadow
       document.body.appendChild(this.element);
+      
+      // Set initial trajectory type
+      this.trajectoryTypes = ['straight', 'zigzag', 'sine', 'spiral'];
+      this.currentTrajectory = this.trajectoryTypes[Math.floor(Math.random() * this.trajectoryTypes.length)];
+      
+      // Trajectory parameters
+      this.time = 0; // Time counter for trajectory calculations
+      this.amplitude = Math.random() * 5 + 3; // For sine waves and spiral patterns
+      this.frequency = Math.random() * 0.05 + 0.01; // For sine waves
+      this.zigzagTimer = 0; // For zigzag pattern
+      this.zigzagInterval = Math.random() * 30 + 20; // Duration before changing zigzag direction
     }
   
     update() {
-      // Apply gravity and acceleration
+      // Update time counter
+      this.time++;
+      
+      // Apply vertical physics
       if (!this.isBouncing) {
         // Exponential acceleration during fall
         this.speed += this.acceleration * (1 + this.y / (this.gameEnv.innerHeight / 2));
@@ -55,7 +73,10 @@ class Block {
       
       // Update vertical position
       this.y += this.speed;
-  
+      
+      // Apply horizontal movement based on trajectory type
+      this.updateTrajectory();
+      
       // Check if image hit the bottom
       if (this.y > this.gameEnv.innerHeight - this.height && this.speed > 0) { 
         // Bounce behavior
@@ -74,6 +95,15 @@ class Block {
         }
       }
       
+      // Check if image hit the sides of the screen
+      if (this.x < 0) {
+        this.x = 0;
+        this.horizontalSpeed = Math.abs(this.horizontalSpeed); // Bounce off left wall
+      } else if (this.x > this.gameEnv.innerWidth - this.width) {
+        this.x = this.gameEnv.innerWidth - this.width;
+        this.horizontalSpeed = -Math.abs(this.horizontalSpeed); // Bounce off right wall
+      }
+      
       // Check if image reached top of bounce
       if (this.isBouncing && this.speed >= 0) {
         this.isBouncing = false;
@@ -88,6 +118,41 @@ class Block {
       this.element.style.transform = `rotate(${rotation}deg)`;
     }
     
+    updateTrajectory() {
+      switch (this.currentTrajectory) {
+        case 'straight':
+          // Simple straight line with constant horizontal velocity
+          this.x += this.horizontalSpeed;
+          break;
+          
+        case 'zigzag':
+          // Zigzag pattern changing direction periodically
+          this.zigzagTimer++;
+          if (this.zigzagTimer > this.zigzagInterval) {
+            this.horizontalSpeed = -this.horizontalSpeed;
+            this.zigzagTimer = 0;
+          }
+          this.x += this.horizontalSpeed;
+          break;
+          
+        case 'sine':
+          // Sinusoidal wave pattern
+          const centerX = this.x; // Current position is center
+          this.x = centerX + Math.sin(this.time * this.frequency) * this.amplitude;
+          break;
+          
+        case 'spiral':
+          // Spiral-like movement (increasing sine amplitude)
+          const spiralFactor = Math.min(this.y / (this.gameEnv.innerHeight / 2), 1);
+          this.x += Math.sin(this.time * this.frequency) * this.amplitude * spiralFactor;
+          break;
+          
+        default:
+          // Default to straight line if trajectory type is unknown
+          this.x += this.horizontalSpeed;
+      }
+    }
+    
     resetBlock() {
       // Reset position to top
       this.y = -this.height - Math.random() * 200; // Stagger the heights
@@ -100,6 +165,16 @@ class Block {
       this.bounceCount = 0;
       this.isBouncing = false;
       
+      // Choose a new trajectory type
+      this.currentTrajectory = this.trajectoryTypes[Math.floor(Math.random() * this.trajectoryTypes.length)];
+      
+      // Reset trajectory parameters
+      this.horizontalSpeed = (Math.random() - 0.5) * 5;
+      this.amplitude = Math.random() * 5 + 3;
+      this.frequency = Math.random() * 0.05 + 0.01;
+      this.zigzagTimer = 0;
+      this.zigzagInterval = Math.random() * 30 + 20;
+      
       // Increase fall count for difficulty progression
       this.fallCount++;
       
@@ -107,9 +182,19 @@ class Block {
       this.baseSpeed += 0.1;
       this.acceleration += 0.01;
       
-      // Change image on each reset
+      // Change image on each reset (if multiple images available)
       this.imageUrl = this.imageUrls[Math.floor(Math.random() * this.imageUrls.length)];
       this.element.src = this.imageUrl;
+    }
+    
+    // Method to manually set trajectory
+    setTrajectory(trajectoryType) {
+      if (this.trajectoryTypes.includes(trajectoryType)) {
+        this.currentTrajectory = trajectoryType;
+      } else {
+        console.warn(`Invalid trajectory type: ${trajectoryType}. Using 'straight' instead.`);
+        this.currentTrajectory = 'straight';
+      }
     }
   
     render(ctx) {
