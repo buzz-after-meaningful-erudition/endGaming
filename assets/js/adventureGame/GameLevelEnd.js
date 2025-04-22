@@ -88,13 +88,13 @@ class GameLevelEnd {
         keypress: { up: 73, left: 74, down: 75, right: 76 } // Using I, J, K, L for Alex to differentiate from Steve 
     };
         
-    const sprite_src_tux = path + "/images/gamify/end.png";
-    const sprite_greet_tux = "THIS IS HOW IT ENDS - Tejo :P";
-    const sprite_data_tux = {
-        id: 'Tux',
-        greeting: sprite_greet_tux,
-        src: sprite_src_tux,
-        SCALE_FACTOR: 8,
+    const sprite_src_dragon = path + "/images/gamify/end.png";
+    const sprite_greet_dragon = "I dare you to kill me. If you suprisingly do then you will obtain the enderdragon egg!";
+    const sprite_data_dragon = {
+        id: 'Dragon',
+        greeting: sprite_greet_dragon,
+        src: sprite_src_dragon,
+        SCALE_FACTOR: 6,
         ANIMATION_RATE: 1000000,
         pixels: {height: 976, width: 1128},
         INIT_POSITION: { x: (width / 2), y: (height / 2) },
@@ -109,7 +109,7 @@ class GameLevelEnd {
           ]
         },
         reaction: function() {
-          alert(sprite_greet_tux);
+          alert(sprite_greet_dragon);
         }
     };
     
@@ -117,7 +117,7 @@ class GameLevelEnd {
       { class: BackgroundParallax, data: image_data_parallax },  // Add parallax background first
       { class: GamEnvBackground, data: image_data_end },         // Then regular background
       { class: Player, data: sprite_data_chillguy },
-      { class: Npc, data: sprite_data_tux },
+      { class: Npc, data: sprite_data_dragon },
       { class: Player, data: sprite_data_alex }
     ];
     
