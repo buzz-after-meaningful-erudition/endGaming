@@ -2,7 +2,6 @@ import GamEnvBackground from './GameEngine/GameEnvBackground.js';
 import BackgroundParallax from './GameEngine/BackgroundParallax.js';
 import Player from './GameEngine/Player.js';
 import Npc from './GameEngine/Npc.js';
-import Quiz from './Quiz.js';
 import Block from './Block.js';  // Import the Block class
 
 class GameLevelEnd {
@@ -111,11 +110,6 @@ class GameLevelEnd {
         },
         reaction: function() {
           alert(sprite_greet_tux);
-        },
-        interact: function() {
-          let quiz = new Quiz();
-          quiz.initialize();
-          quiz.openPanel(sprite_data_tux);
         }
     };
     
