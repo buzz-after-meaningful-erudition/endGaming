@@ -206,7 +206,7 @@ class GameLevelEnd {
   // Add this method if the game engine requires it
   initialize() {
     // Spawn initial blocks
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 2; i++) {
       this.spawnBlock();
     }
   }
