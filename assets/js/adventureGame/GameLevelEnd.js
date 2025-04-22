@@ -127,13 +127,15 @@ class GameLevelEnd {
       { class: Player, data: sprite_data_alex }
     ];
     
-    // Initialize blocks array
-    this.blocks = [];
+    // Initialize single block reference
+    this.currentBlock = null;
+    
+    // Track whether a block is active
+    this.blockActive = false;
     
     // Set up block spawn timer
-    this.blockSpawnInterval = 2000; // Spawn a new block every 2 seconds
+    this.blockSpawnInterval = 2000; // Time between blocks (2 seconds)
     this.lastBlockSpawnTime = 0;
-    this.maxBlocks = 20; // Maximum number of blocks on screen at once
     
     // Start the block animation loop
     this.startBlockAnimation();
@@ -146,39 +148,43 @@ class GameLevelEnd {
     
     // Set up block spawner interval
     this.blockSpawnerId = setInterval(() => {
-      this.spawnBlock();
+      // Only spawn a new block if there's no active block
+      if (!this.blockActive) {
+        this.spawnBlock();
+      }
     }, this.blockSpawnInterval);
   }
   
   // Method to spawn a new block
   spawnBlock() {
-    // Check if we've hit the maximum number of blocks
-    if (this.blocks.length < this.maxBlocks) {
-      const newBlock = new Block(this.gameEnv);
-      this.blocks.push(newBlock);
+    // Destroy previous block if it exists
+    if (this.currentBlock) {
+      this.currentBlock.destroy();
     }
+    
+    // Create a new block
+    this.currentBlock = new Block(this.gameEnv);
+    this.blockActive = true;
   }
   
   // Method to update all blocks
   updateBlocks() {
-    // Update each block
-    for (let i = this.blocks.length - 1; i >= 0; i--) {
-      const block = this.blocks[i];
-      block.update();
+    // Update the current block if it exists
+    if (this.currentBlock) {
+      this.currentBlock.update();
       
-      // Check for collisions with players or NPCs
-      // Add collision detection code here if needed
-    }
-    
-    // Clean up blocks that have fallen off screen multiple times
-    this.blocks = this.blocks.filter(block => {
-      // Remove blocks that have fallen too many times (arbitrary limit)
-      if (block.fallCount > 10) {
-        block.destroy();
-        return false;
+      // Check if the block has completed its cycle (based on fall count)
+      // This assumes the Block class increments fallCount after each complete cycle
+      if (this.currentBlock.fallCount > 0) {
+        // Block has completed its cycle, remove it
+        this.currentBlock.destroy();
+        this.currentBlock = null;
+        this.blockActive = false;
       }
-      return true;
-    });
+      
+      // Add collision detection code here if needed
+      // Example: Check for collisions with players or NPCs
+    }
     
     // Continue the animation loop
     this.animationFrameId = requestAnimationFrame(this.updateBlocks.bind(this));
@@ -196,19 +202,17 @@ class GameLevelEnd {
       clearInterval(this.blockSpawnerId);
     }
     
-    // Destroy all blocks
-    this.blocks.forEach(block => {
-      block.destroy();
-    });
-    this.blocks = [];
+    // Destroy current block if it exists
+    if (this.currentBlock) {
+      this.currentBlock.destroy();
+      this.currentBlock = null;
+    }
   }
   
   // Add this method if the game engine requires it
   initialize() {
-    // Spawn initial blocks
-    for (let i = 0; i < 2; i++) {
-      this.spawnBlock();
-    }
+    // Spawn initial block
+    this.spawnBlock();
   }
 }
 
