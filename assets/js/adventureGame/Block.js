@@ -25,7 +25,7 @@ class Block {
       
       // Array of image URLs to use
       this.imageUrls = [
-        'https://cdn-icons-png.flaticon.com/512/1946/1946429.png', // Star
+        'https://static.wikia.nocookie.net/minecraftpocketedition/images/3/30/Eye_of_Ender.png/revision/latest?cb=20150424052459', // Star
         'https://cdn-icons-png.flaticon.com/512/3082/3082059.png', // Heart
         'https://cdn-icons-png.flaticon.com/512/616/616655.png',   // Diamond
         'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', // Smiley
