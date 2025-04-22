@@ -26,13 +26,6 @@ class Block {
       // Array of image URLs to use
       this.imageUrls = [
         'https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/7a/Eye_of_Ender_JE2_BE2.png', // Star
-        'https://cdn-icons-png.flaticon.com/512/3082/3082059.png', // Heart
-        'https://cdn-icons-png.flaticon.com/512/616/616655.png',   // Diamond
-        'https://cdn-icons-png.flaticon.com/512/1828/1828884.png', // Smiley
-        'https://cdn-icons-png.flaticon.com/512/3132/3132693.png', // Moon
-        'https://cdn-icons-png.flaticon.com/512/740/740842.png',   // Music note
-        'https://cdn-icons-png.flaticon.com/512/1752/1752772.png', // Lightning
-        'https://cdn-icons-png.flaticon.com/512/5110/5110770.png', // Flame
       ];
       
       // Select a random image URL
