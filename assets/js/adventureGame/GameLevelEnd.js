@@ -88,7 +88,7 @@ class GameLevelEnd {
         keypress: { up: 73, left: 74, down: 75, right: 76 } // Using I, J, K, L for Alex to differentiate from Steve 
     };
         
-    const sprite_src_tux = path + "/images/gamify/tux.png";
+    const sprite_src_tux = path + "/images/gamify/end.png";
     const sprite_greet_tux = "THIS IS HOW IT ENDS - Tejo :P";
     const sprite_data_tux = {
         id: 'Tux',
@@ -96,10 +96,10 @@ class GameLevelEnd {
         src: sprite_src_tux,
         SCALE_FACTOR: 8,
         ANIMATION_RATE: 1000000,
-        pixels: {height: 256, width: 352},
+        pixels: {height: 976, width: 1128},
         INIT_POSITION: { x: (width / 2), y: (height / 2) },
-        orientation: {rows: 8, columns: 11 },
-        down: {row: 5, start: 0, columns: 3 },
+        orientation: {rows: 2, columns: 2 },
+        down: {row: 1, start: 0, columns: 1 },
         hitbox: { widthPercentage: 0.1, heightPercentage: 0.2 },
         zIndex: 10,  // Same z-index as player
         quiz: {
