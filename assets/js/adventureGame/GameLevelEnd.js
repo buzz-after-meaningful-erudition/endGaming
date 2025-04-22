@@ -2,7 +2,9 @@ import GamEnvBackground from './GameEngine/GameEnvBackground.js';
 import BackgroundParallax from './GameEngine/BackgroundParallax.js';
 import Player from './GameEngine/Player.js';
 import Npc from './GameEngine/Npc.js';
-import Block from './Block.js';  // Import the Block class
+import Block from './Block.js';  
+import Game from './Game.js';  // Import Game for quiz functionality
+import HelpPanel from './HelpPanel.js';  // Add HelpPanel for help functionality
 
 class GameLevelEnd {
   constructor(gameEnv) {
@@ -89,7 +91,7 @@ class GameLevelEnd {
     };
         
     const sprite_src_tux = path + "/images/gamify/tux.png";
-    const sprite_greet_tux = "THIS IS HOW IT ENDS - Tejo :P";
+    const sprite_greet_tux = "Welcome to the End! Ready to test your Linux knowledge?";
     const sprite_data_tux = {
         id: 'Tux',
         greeting: sprite_greet_tux,
@@ -102,14 +104,20 @@ class GameLevelEnd {
         down: {row: 5, start: 0, columns: 3 },
         hitbox: { widthPercentage: 0.1, heightPercentage: 0.2 },
         zIndex: 10,  // Same z-index as player
-        quiz: {
-          title: "Linux Command Quiz",
-          questions: [
-            "It's eternity in here! It's eternity in here! It's eternity in here! It's eternity in here! It's eternity in here! It's eternity in here! It's eternity in here! It's eternity in here! \n1. huh\n2. what\n3. ...\n4. ok bye"
-          ]
-        },
         reaction: function() {
           alert(sprite_greet_tux);
+        },
+        interact: function() {
+          // Use the Game's quiz system with the NPC's ID as the category
+          Game.attemptQuizForNpc('Tux', function(success) {
+            if (success) {
+              alert("Congratulations! You've mastered Linux commands!");
+              // You could reward the player here
+              Game.giveItem('linux_certificate', 1);
+            } else {
+              alert("Keep practicing your Linux skills!");
+            }
+          });
         }
     };
     
@@ -133,6 +141,13 @@ class GameLevelEnd {
     
     // Start the block animation loop
     this.startBlockAnimation();
+
+    // Add help panel keyboard listener (similar to what's in GameLevelAirport)
+    document.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'h') {
+        HelpPanel.toggle();
+      }
+    });
   }
   
   // Method to handle block spawning and animation
