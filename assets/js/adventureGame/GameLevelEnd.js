@@ -131,8 +131,75 @@ class GameLevelEnd {
     this.blockSpawnInterval = 2000; // Time between blocks (2 seconds)
     this.lastBlockSpawnTime = 0;
     
+    // Add scorekeeping for caught enderdragon eyes
+    this.eyesCaught = 0;
+    this.scoreElement = this.createScoreDisplay();
+    
+    // Create instruction element
+    this.instructionElement = this.createInstructions();
+    
     // Start the block animation loop
     this.startBlockAnimation();
+  }
+  
+  // Create score display
+  createScoreDisplay() {
+    const scoreDisplay = document.createElement('div');
+    scoreDisplay.id = 'score-display';
+    scoreDisplay.style.position = 'absolute';
+    scoreDisplay.style.top = '20px';
+    scoreDisplay.style.left = '20px';
+    scoreDisplay.style.padding = '10px';
+    scoreDisplay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    scoreDisplay.style.color = 'white';
+    scoreDisplay.style.fontFamily = 'Minecraft, sans-serif';
+    scoreDisplay.style.fontSize = '18px';
+    scoreDisplay.style.borderRadius = '5px';
+    scoreDisplay.style.zIndex = '200';
+    scoreDisplay.textContent = 'Eyes Caught: 0';
+    document.body.appendChild(scoreDisplay);
+    return scoreDisplay;
+  }
+  
+  // Create instruction display
+  createInstructions() {
+    const instructionDisplay = document.createElement('div');
+    instructionDisplay.id = 'instructions';
+    instructionDisplay.style.position = 'absolute';
+    instructionDisplay.style.top = '60px';
+    instructionDisplay.style.left = '20px';
+    instructionDisplay.style.padding = '10px';
+    instructionDisplay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    instructionDisplay.style.color = 'white';
+    instructionDisplay.style.fontFamily = 'Minecraft, sans-serif';
+    instructionDisplay.style.fontSize = '16px';
+    instructionDisplay.style.borderRadius = '5px';
+    instructionDisplay.style.zIndex = '200';
+    instructionDisplay.textContent = 'Press Z to catch falling Eyes of Ender!';
+    document.body.appendChild(instructionDisplay);
+    
+    // Make instructions fade out after 5 seconds
+    setTimeout(() => {
+      instructionDisplay.style.transition = 'opacity 2s';
+      instructionDisplay.style.opacity = '0';
+    }, 5000);
+    
+    return instructionDisplay;
+  }
+  
+  // Method to update score
+  updateScore() {
+    this.eyesCaught++;
+    this.scoreElement.textContent = `Eyes Caught: ${this.eyesCaught}`;
+    
+    // Add visual feedback when score increases
+    this.scoreElement.style.transform = 'scale(1.2)';
+    this.scoreElement.style.transition = 'transform 0.2s';
+    
+    // Reset after animation
+    setTimeout(() => {
+      this.scoreElement.style.transform = 'scale(1)';
+    }, 200);
   }
   
   // Method to handle block spawning and animation
@@ -170,14 +237,19 @@ class GameLevelEnd {
       // Check if the block has completed its cycle (based on fall count)
       // This assumes the Block class increments fallCount after each complete cycle
       if (this.currentBlock.fallCount > 0) {
-        // Block has completed its cycle, remove it
+        // If the block was destroyed by player (Z key), update score
+        if (this.currentBlock.isDestroyed) {
+          this.updateScore();
+        }
+        
+        // Block has completed its cycle or was destroyed, remove it
         this.currentBlock.destroy();
         this.currentBlock = null;
         this.blockActive = false;
+        
+        // Spawn a new block immediately
+        this.spawnBlock();
       }
-      
-      // Add collision detection code here if needed
-      // Example: Check for collisions with players or NPCs
     }
     
     // Continue the animation loop
@@ -200,6 +272,15 @@ class GameLevelEnd {
     if (this.currentBlock) {
       this.currentBlock.destroy();
       this.currentBlock = null;
+    }
+    
+    // Remove UI elements
+    if (this.scoreElement && this.scoreElement.parentNode) {
+      this.scoreElement.parentNode.removeChild(this.scoreElement);
+    }
+    
+    if (this.instructionElement && this.instructionElement.parentNode) {
+      this.instructionElement.parentNode.removeChild(this.instructionElement);
     }
   }
   
