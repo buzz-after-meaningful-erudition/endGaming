@@ -10,7 +10,8 @@ title: Stocks Portfolio
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #0f0f0f;
+            color: #fff;
             margin: 0;
             padding: 0;
         }

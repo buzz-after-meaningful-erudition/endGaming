@@ -152,10 +152,6 @@ async function toggleGroupInQueue() {
     fetchQueue();
 }
 
-// Attach event listener to the toggle button
-document.getElementById('customToggleBtn').addEventListener('click', toggleGroupInQueue);
-
-
 // update display - ran periodically
 function updateQueueDisplay(queue) {
     currentQueue = queue.waiting;

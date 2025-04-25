@@ -161,9 +161,9 @@
     </div>
 
     <!-- QR code placed right below the queue box -->
-    <div class="qr-code-container">
+    <!-- <div class="qr-code-container">
         <img src="https://github.com/user-attachments/assets/6b500f35-2573-4bd8-8d10-9a6431e2a723">
-    </div>
+    </div> -->
 
     <div class="map-container">
         <img src="https://i.ibb.co/tMQ1mTy6/map.png" alt="Map">
@@ -183,7 +183,7 @@ const fetchOptions2 = {
     ...fetchOptions,
     credentials: 'omit',
 }
-let teacherEmail = "jmort1021@gmail.com";
+let teacherEmail = localStorage.getItem('teacherEmail');
 const tinkleURL = javaURI + '/api/tinkle/add';
 // Load users from localStorage
 function loadUsers() {

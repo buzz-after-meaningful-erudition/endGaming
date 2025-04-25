@@ -1,0 +1,140 @@
+---
+layout: base
+---
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    .dropdown-container {
+        margin-bottom: 20px;
+    }
+    select {
+        padding: 5px;
+        font-size: 16px;
+    }
+    button {
+        padding: 5px 10px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    option{
+        color: white, import !important;
+    }
+</style>
+
+<body>
+<!-- Change to {{content}} -->
+    <h1>Select Teacher</h1>
+    <div class="dropdown-container">
+            <label for="teacherDropdown">Select Teacher:</label>
+            <select id="teacherDropdown" onchange="handleDropdownChange()">
+                <option value="" disabled selected>Select a teacher</option>
+                <option value="teacher1">Teacher 1</option>
+                <option value="teacher2">Teacher 2</option>
+                <option value="addTeacher">Add Teacher</option>
+            </select>
+    </div>
+    <button id="submit">Submit</button>
+
+</body>
+
+<script type="module">
+    import { javaURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+
+    const fetchQueueOptions = { ...fetchOptions, credentials: 'omit' };
+
+    function fetchQueues() {
+        console.log('Fetching all queues...');
+        fetch(javaURI + "/api/queue/all", fetchQueueOptions)
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // Parse the response as JSON
+                } else {
+                    console.error("Failed to fetch queues:", response.statusText);
+                    return [];
+                }
+            })
+            .then(data => {
+                console.log("All Queues:");
+                const teacherDropdown = document.getElementById("teacherDropdown");
+
+                // Remove all options except the "Add Teacher" option
+                teacherDropdown.innerHTML = `
+                    <option value="" disabled selected>Select a teacher</option>
+                    <option value="addTeacher">Add Teacher</option>
+                `;
+
+                // Add each teacher as an option
+                data.forEach(queue => {
+                    console.log(`Teacher: ${queue.teacherEmail}, Queue: ${queue.peopleQueue}`);
+                    const option = document.createElement("option");
+                    option.value = queue.teacherEmail;
+                    option.textContent = queue.teacherEmail;
+                    teacherDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error("Fetch error:", error));
+    }
+    fetchQueues(); // Initial fetch to populate the dropdown
+
+    // Handle dropdown change
+    window.handleDropdownChange = function () {
+        const teacherDropdown = document.getElementById("teacherDropdown");
+        const selectedValue = teacherDropdown.value;
+
+        if (selectedValue === "addTeacher") {
+            addTeacher();
+        } else {
+            console.log(`Selected teacher: ${selectedValue}`);
+            // Add logic to handle teacher selection if needed
+        }
+    };
+
+    // Add Teacher function
+    function addTeacher() {
+        const newTeacherEmail = prompt("Enter the new teacher's email:");
+        if (newTeacherEmail) {
+            console.log(`Adding new teacher: ${newTeacherEmail}`);
+            // Add logic to save the new teacher to the backend if needed
+            fetch(javaURI + "/api/queue/addQueue", {
+                ...fetchQueueOptions,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ teacherEmail: newTeacherEmail, peopleQueue: "" })
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log("New teacher added successfully.");
+                    fetchQueues(); // Refresh the dropdown
+                } else {
+                    console.error("Failed to add new teacher:", response.statusText);
+                }
+            })
+            .catch(error => console.error("Fetch error:", error));
+        } else {
+            console.log("No teacher email entered.");
+        }
+    }
+
+    // Handle Submit button click
+    document.getElementById("submit").addEventListener("click", () => {
+        const teacherDropdown = document.getElementById("teacherDropdown");
+        const selectedValue = teacherDropdown.value;
+
+        if (!selectedValue || selectedValue === "addTeacher") {
+            alert("Please select a valid teacher.");
+            return;
+        }
+
+        // Store the selected teacher in localStorage
+        localStorage.setItem("teacherEmail", selectedValue);
+        console.log(`Stored teacherEmail: ${selectedValue}`);
+
+        // Redirect to the scanner page
+        window.location.href = "{{site.baseurl}}/bathroom/scanner";
+    });
+</script>

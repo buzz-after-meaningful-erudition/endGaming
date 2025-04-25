@@ -1,0 +1,57 @@
+---
+layout: toolkit
+active_tab: groups
+title: Groups Management
+type: issues
+permalink: /student/groups
+comments: false
+---
+
+{% include MorteVision/groupshead.html %}
+
+<div class="container">
+    <div class="tabs">
+        <div class="tab active" data-tab="create">Create Group</div>
+        <div class="tab" data-tab="view">View Groups</div>
+    </div>
+
+    <div id="create-tab" class="tab-content active">
+        <h2>Create a New Group</h2>
+        <form id="create-group-form">
+            <div class="form-group">
+                <label for="group-name">Group Name:</label>
+                <input type="text" id="group-name" required>
+            </div>
+            <div class="form-group">
+                <label for="group-period">Period:</label>
+                <input type="text" id="group-period" required>
+            </div>
+            <div class="form-group">
+                <label>Select Group Members:</label>
+                <div class="person-list" id="person-list">
+                    <!-- People will be displayed here -->
+                    <div class="loading">Loading people...</div>
+                </div>
+            </div>
+            <div class="selected-people" id="selected-people">
+                <h3>Selected People:</h3>
+                <div id="selected-people-list">
+                    <!-- Selected people will appear here -->
+                    <div class="empty-selection">No people selected</div>
+                </div>
+            </div>
+            <button type="submit">Create Group</button>
+        </form>
+    </div>
+
+    <div id="view-tab" class="tab-content">
+        <h2>Current Groups</h2>
+        <div id="available-groups">
+            <!-- Groups will be displayed here -->
+            <div class="loading">Loading groups...</div>
+        </div>
+    </div>
+</div>
+
+<script src="groups.js"></script>
+<link rel="stylesheet" href="groups.css">

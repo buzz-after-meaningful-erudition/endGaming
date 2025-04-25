@@ -32,9 +32,9 @@ layout: base
             Casino
           </a>
           <ul class="dropdown-menu" aria-labelledby="casinoDropdown">
-            <li><a class="dropdown-item" href="{{ site.baseurl }}/gamify/blackjack">Blackjack</a></li>
             <li><a class="dropdown-item" href="{{ site.baseurl }}/gamify/dices">Dice</a></li>
             <li><a class="dropdown-item" href="{{ site.baseurl }}/gamify/mines">Mines</a></li>
+            <li><a class="dropdown-item" href="{{ site.baseurl }}/gamify/blackjack">Blackjack</a></li>
             <li><a class="dropdown-item" href="{{ site.baseurl }}/gamify/poker">Poker</a></li>
           </ul>
         </li>
@@ -54,9 +54,6 @@ layout: base
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" href="{{ site.baseurl }}/gamify/adventureGame">Adventure Game</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="{{ site.baseurl }}/media">Media Bias Game</a>
         </li>
         <li class="nav-item dropdown">
@@ -71,12 +68,8 @@ layout: base
         </li>
       </ul>
 
-      <!-- User Info Section -->
+      <!-- User Info Section (Balance Only) -->
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item px-3">
-          <div class="d-flex align-items-center text-light">
-          </div>
-        </li>
         <li class="nav-item px-3">
           <div class="d-flex align-items-center text-light">
             <i class="bi bi-coin me-2"></i>
@@ -94,29 +87,53 @@ layout: base
 <script type="module">
 import { javaURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
 
-// Fetch and display user info in navbar
-async function loadUserInfo() {
+// Fetch and display user balance in navbar
+async function loadUserBalance() {
   try {
     const response = await fetch(`${javaURI}/api/person/get`, fetchOptions);
-    if (!response.ok) throw new Error("Failed to fetch user data");
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error("Response is not JSON");
+    }
+
     const userData = await response.json();
     
-    document.getElementById('navbarUsername').textContent = userData.uid || "Guest";
-    document.getElementById('navbarBalance').textContent = `$${Number(userData.balance).toFixed(2)}`;
+    // Ensure the balance element exists
+    const balanceElement = document.getElementById('navbarBalance');
+    if (!balanceElement) {
+      throw new Error("Balance element not found in DOM");
+    }
+    
+    // Format balance with proper decimal places
+    const balance = Number(userData.balance).toFixed(2);
+    balanceElement.textContent = `$${balance}`;
+    
   } catch (error) {
-    console.error("Error loading user info:", error);
-    document.getElementById('navbarUsername').textContent = "Error";
-    document.getElementById('navbarBalance').textContent = "$0.00";
+    console.error("Error loading balance:", error);
+    const balanceElement = document.getElementById('navbarBalance');
+    if (balanceElement) {
+      balanceElement.textContent = "$0.00";
+    }
   }
 }
 
-document.addEventListener("DOMContentLoaded", loadUserInfo);
+// Load balance when page loads and every 30 seconds
+document.addEventListener("DOMContentLoaded", () => {
+  loadUserBalance();
+  setInterval(loadUserBalance, 30000);
+});
 </script>
 
 <style>
   .dropdown-menu {
     background-color: #1c1c1c !important;
     border: none;
+    z-index: 1;
   }
 
   .dropdown-item {
@@ -130,18 +147,19 @@ document.addEventListener("DOMContentLoaded", loadUserInfo);
     transform: translateX(5px);
   }
 
-  /* User Info Styling */
-  #navbarUsername, #navbarBalance {
+  /* Balance Styling */
+  #navbarBalance {
     font-weight: 500;
     transition: color 0.3s ease;
+    font-family: Arial, sans-serif;
   }
 
-  .nav-item:hover #navbarUsername,
   .nav-item:hover #navbarBalance {
     color: #ff9800 !important;
   }
 
-  .bi-person-circle, .bi-coin {
+  .bi-coin {
     font-size: 1.2rem;
+    vertical-align: middle;
   }
 </style>

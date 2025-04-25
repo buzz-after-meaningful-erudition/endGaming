@@ -733,8 +733,8 @@ active_tab: profile
         }
     };
 
-    window.fetchUid = async function () {
-        const URL = pythonURI + "/api/id"; // Adjusted endpoint
+    window.fetchSid = async function () {
+        const URL = javaURI + "/api/person/get"; // Adjusted endpoint
 
         try {
             const response = await fetch(URL, fetchOptions);
@@ -743,12 +743,13 @@ active_tab: profile
             }
 
             const data = await response.json();
-            return data.uid;
+            return data.sid;
         } catch (error) {
             console.error('Error fetching UID:', error.message);
             return null;
         }
     };
+  
 
     window.fetchEmail = async function () {
         const URL = javaURI + "/api/person/get"; // Adjusted endpoint

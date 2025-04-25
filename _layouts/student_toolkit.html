@@ -79,12 +79,13 @@ active_tab: toolkit
     .main-info {
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto auto auto auto auto;
+        grid-template-rows: auto auto auto auto auto auto auto auto;
         gap: 30px 0px;
         grid-auto-flow: row;
         grid-template-areas:
             "header"
             "bathroom"
+            "groups"
             "screen-queue"
             "assignment-submissions"
             "seed-tracker"
@@ -115,6 +116,30 @@ active_tab: toolkit
 
     .bathroom-thumbnail {
         grid-area: bathroom-thumbnail;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .groups {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        grid-template-rows: 1fr;
+        gap: 0px 0px;
+        grid-auto-flow: row;
+        grid-template-areas:
+            "groups-thumbnail groups-details";
+        grid-area: groups;
+    }
+
+    .groups-details {
+        grid-area: groups-details;
+        padding: 30px;
+    }
+
+    .groups-thumbnail {
+        grid-area: groups-thumbnail;
         background-color: white;
         display: flex;
         justify-content: center;
@@ -397,7 +422,7 @@ active_tab: toolkit
     </div>
 
     <!-- bathroom -->
-    <a href="{{site.baseurl}}/bathroom">
+    <a href="{{site.baseurl}}/hallpass">
         <div class="bathroom card">
             <div class="bathroom-details">
                 <h3>Bathroom</h3>
@@ -416,8 +441,27 @@ active_tab: toolkit
         </div>
     </a>
 
+    <!-- Groups -->
+    <a href="{{site.baseurl}}/student/groups">
+        <div class="groups card">
+            <div class="groups-details">
+                <h3>Groups</h3>
+                <p>This tool lets you:</p>
+                <ul>
+                    <li>Create new collaborative groups</li>
+                    <li>View existing groups and their members</li>
+                    <li>Organize class projects and activities</li>
+                </ul>
+            </div>
+            <div class="groups-thumbnail">
+                <img src="{{site.baseurl}}/images/toolkit-nav-buttons/groups.png" alt="Groups"
+                    class="thumbnail">
+            </div>
+        </div>
+    </a>
+
     <!-- screen queue -->
-    <a href="{{site.baseurl}}/student-toolkit/queue">
+    <a href="{{site.baseurl}}/student/queue">
         <div class="screen-queue card">
             <div class="screen-queue-details">
                 <h3>Screen Queue</h3>
@@ -472,16 +516,14 @@ active_tab: toolkit
     </a>
 
     <!-- sagai -->
-    <a href="{{site.baseurl}}/student/SAGAI">
+    <a href="{{site.baseurl}}/student/TeamTeachToolkit/signup">
         <div class="sagai card">
             <div class="sagai-details">
-                <h3>SAGAI</h3>
+                <h3>Team Teach SignUp</h3>
                 <p>This tool lets you:</p>
                 <ul>
-                    <li>Use AI to grade your work</li>
-                    <li>Use AI to generate hacks based on a topic or other set of instructions</li>
-                    <li>Ask an AI to answer questions you have</li>
-                    <li>Manage assignments</li>
+                    <li>Create Team Teach assignments and display the topics with dates</li>
+                    <li>Sign up for team teaches with your account</li>
                 </ul>
             </div>
             <div class="sagai-thumbnail">
@@ -491,7 +533,7 @@ active_tab: toolkit
     </a>
 
     <!-- grade viewer -->
-    <a href="{{site.baseurl}}/student/view-grades">
+    <a href="{{site.baseurl}}/student/grades">
         <div class="view-grades card">
             <div class="view-grades-details">
                 <h3>View Grades</h3>

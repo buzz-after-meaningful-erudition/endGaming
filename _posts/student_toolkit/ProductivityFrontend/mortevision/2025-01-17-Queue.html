@@ -1,11 +1,10 @@
 ---
 title: Presentation Queue
-permalink: /student-toolkit/queue
+permalink: /student/queue
 menu: nav/toolkits/productivity-frontend/menu.html
-layout: base
+layout: toolkit
+active_tab: queue
 ---
-
-{% include MorteVision/queuehead.html %}
 
 <div id="assignmentModal" class="modal">
     <div class="modal-content">
@@ -16,7 +15,7 @@ layout: base
     </div>
 </div>
 
-<h1>Queue Management</h1>
+<h1 style="text-align: center;">Queue Management</h1>
 
 <div class="queue-container">
     <div class="column">
@@ -37,12 +36,15 @@ layout: base
 <br>
 
 <div class="controls">
-    <button id="addQueue" class="large primary">Add to Waiting</button>
-    <button id="removeQueue" class="large primary">Remove from Waiting</button>
-    <button id="beginTimer" class="large primary">Begin Timer</button><br>
-    <button id="customToggleBtn" class="large primary">Add/Remove Group in Waiting</button>
+    <button id="addQueue" class="button">Add to Waiting</button>
+    <button id="removeQueue" class="button">Remove from Waiting</button>
+    <button id="beginTimer" class="button">Begin Timer</button>
 </div>
 
 <div class="timer">
     <span id="timerDisplay">00:00</span>
 </div>
+
+<link rel="stylesheet" href="{{ '/assets/MorteVision/style/queue.css?v=' | append: site.github.build_revision | relative_url }}">
+<script src="{{ '/assets/js/api/config.js?v=' | append: site.github.build_revision | relative_url }}" type="module"></script>
+<script src="{{ '/assets/MorteVision/js/queue.js?v=' | append: site.github.build_revision | relative_url }}" type="module"></script>

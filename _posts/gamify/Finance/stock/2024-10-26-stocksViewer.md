@@ -14,10 +14,12 @@ title: Stocks Viewer
       box-sizing: border-box;
     }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-      color: #333;
-    }
+            font-family: Arial, sans-serif;
+            background-color: #0f0f0f;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
     /* Navigation Bar */
     .navbar {
       display: flex;
@@ -58,7 +60,8 @@ title: Stocks Viewer
       padding: 20px;
       overflow-y:scroll;
       position: relative; 
-      height: 100%
+      height: 100%;
+      z-index: 0;
     }
     .sidebar h2 {
       font-size: 1.2em;

@@ -1,160 +1,92 @@
 ---
-toc: false
-layout: post
+layout: toolkit
+active_tab: teamteach
 title: Hacks Grader
 permalink: /student/SAGAI/grader
 description: Grade hacks on a 0.55 scale while also providing feedback
 ---
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacks Grader</title>
-<style>
-        .signout {
-            text-align: right;
-            padding: 10px;
-            margin-right: 20px;
-        }
-        .container {
-            margin-top: 40px;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #ask-question {
-            margin-top: 30px;
-        }
-        textarea {
-            width: 50%;
-            padding: 10px;
-            margin: 10px 0;
-            box-sizing: border-box;
-            background-color: #333;
-            border: 1px solid #555;
-            color: white;
-            resize: none;
-            overflow: hidden;
-        }
-        .question {
-            background-color: #222;
-            padding: 10px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .reply-box {
-            display: none;
-            background-color: #333;
-            padding: 10px;
-            margin-top: 10px;
-        }
-        .arrow {
-            cursor: pointer;
-            font-size: 24px;
-            padding: 0 10px;
-        }
-        .section-title {
-            font-size: 36px;
-            margin-bottom: 30px;
-        }
-        .output {
-            margin-top: 20px;
-        }
-        .form-box {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .form-box label {
-            width: 50%;
-            text-align: left;
-            margin-top: 10px;
-        }
-        select {
-            width: 50%;
-            padding: 10px;
-            margin: 10px 0;
-            box-sizing: border-box;
-            background-color: #333;
-            border: 1px solid #555;
-            color: white;
-        }
-        .post-meta {
-            display: none;
-        }
-    </style>
-</head>
-<body>
+<title>Hacks Grader</title>
 
-    <!-- Navigation buttons -->
-    <div class="nav-buttons" style="text-align: center">
-      <a href="{{site.baseurl}}/student/SAGAI"><button style="large primary">Home</button></a>
-      <a href="{{site.baseurl}}/student/SAGAI/generator"><button style="large primary">Generator</button></a>
-        <a href="{{site.baseurl}}/student/SAGAI/review"><button style="large primary">Review</button></a>
-    </div>
+<!-- Navigation buttons -->
+<div class="flex justify-center mt-5 flex-wrap gap-4 text-center">
+  <a href="{{site.baseurl}}/student/TeamTeachToolkit">
+    <button class="bg-black text-white border border-white px-5 py-2 hover:bg-gray-500 text-lg">Home</button>
+  </a>
+  <a href="{{site.baseurl}}/student/TeamTeachToolkit/generator">
+    <button class="bg-black text-white border border-white px-5 py-2 hover:bg-gray-500 text-lg">Generator</button>
+  </a>
+  <a href="{{site.baseurl}}/student/TeamTeachToolkit/review">
+    <button class="bg-black text-white border border-white px-5 py-2 hover:bg-gray-500 text-lg">Review</button>
+  </a>
+  <a href="{{site.baseurl}}/student/TeamTeachToolkit/signup">
+    <button class="bg-black text-white border border-white px-5 py-2 hover:bg-gray-500 text-lg">Sign Up</button>
+  </a>
+</div>
 
-    <!-- Main Grader section -->
-    <div class="container">
-        <!-- Grading Form -->
-        <div class="form-box">
-            <label for="requirements">Requirements:</label>
-            <textarea id="requirements" placeholder="Write requirements here" oninput="adjustTextareaHeight(this)"></textarea>
-            
-            <label for="code">Code:</label>
-            <textarea id="code" placeholder="Insert your code here" oninput="adjustTextareaHeight(this)"></textarea>
-            
-            <button class="large filledHighlight primary" onclick="submitCode()">Submit Requirement and Code</button>
+<!-- Main Grader -->
+<div class="min-h-screen bg-black text-white flex flex-col items-center justify-start py-12 px-4 font-sans">
+  <h1 class="text-4xl font-bold mb-2 text-center">Hacks Grader</h1>
+  <p class="text-gray-400 text-center mb-10">Grade hacks on a 0.55 scale while also providing feedback</p>
 
-            <!-- Displayed output -->
-            <div class="output">
-                <p><strong>Feedback:</strong> <span id="feedback"></span></p>
-            </div>
-        </div>
-    </div>
+  <div class="w-full max-w-2xl bg-[#111] rounded-xl p-8 shadow-lg">
+    <form class="space-y-10 flex flex-col items-center text-center w-full">
+      <!-- Requirements -->
+      <div class="w-full flex flex-col items-center text-center">
+        <label for="requirements" class="text-lg font-semibold mb-2 w-full text-left">Requirements:</label>
+        <textarea id="requirements" placeholder="Write requirements here"
+          class="w-full h-32 resize-none p-3 bg-gray-800 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-white text-white"
+          oninput="adjustTextareaHeight(this)"></textarea>
+      </div>
+      <!-- Code -->
+      <div class="w-full flex flex-col items-center text-center">
+        <label for="code" class="text-lg font-semibold mb-2 w-full text-left">Code:</label>
+        <textarea id="code" placeholder="Insert your code here"
+          class="w-full h-32 resize-none p-3 bg-gray-800 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-white text-white"
+          oninput="adjustTextareaHeight(this)"></textarea>
+      </div>
+      <!-- Submit Button -->
+      <div>
+        <button type="button" onclick="submitCode()"
+          class="bg-black border border-white px-6 py-2 rounded-md hover:bg-gray-600 transition">Submit Requirement and Code</button>
+      </div>
+      <!-- Feedback -->
+      <div class="w-full">
+        <h2 class="text-lg font-semibold mb-1">Feedback:</h2>
+        <p id="feedback" class="text-gray-300 mt-2"></p>
+      </div>
+    </form>
+  </div>
+</div>
 
-    <script>
-        function adjustTextareaHeight(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-        }
+<script>
+  function adjustTextareaHeight(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
 
-        function submitCode() {
-            // Get the values from the dropdown and textarea
-            const prompt = document.getElementById("requirements").value;
-            const codeBlock = document.getElementById("code").value;
+  function submitCode() {
+    const prompt = document.getElementById("requirements").value;
+    const codeBlock = document.getElementById("code").value;
 
-            // Prepare the data to send in the POST request
-            const requestData = {
-                prompt: prompt,
-                code_block: codeBlock
-            };
+    const requestData = {
+      prompt: prompt,
+      code_block: codeBlock
+    };
 
-            // Send the POST request using fetch
-            fetch('https://grading.stu.nighthawkcodingsociety.com/grader/input', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            })
-            .then(response => response.json())  // Parse the response as JSON
-            .then(data => {
-                // Process the response data here (e.g., display feedback)
-                document.getElementById('feedback').innerText = data.response;
-            })
-            .catch(error => {
-                // Handle errors (e.g., network issues)
-                alert("An error occurred: " + error.message);
-            });
-        }
-    </script>
-
-</body>
-</html>
+    fetch('https://grading.stu.nighthawkcodingsociety.com/grader/input', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestData)
+    })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('feedback').innerText = data.response;
+      })
+      .catch(error => {
+        alert("An error occurred: " + error.message);
+      });
+  }
+</script>

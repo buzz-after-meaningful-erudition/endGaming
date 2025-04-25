@@ -4,36 +4,11 @@ layout: post
 title: Team Teach Grades and Comments
 description: Grades and comments for team teaching
 permalink: /student/TeamTeachToolkit/teaching-grades
-
 ---
 
-<style>
-  select {
-    padding: 8px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background-color: #f8f8f8;
-    cursor: pointer;
-  }
-  select:hover {
-    background-color: #e8e8e8;
-  }
-</style>
 
-<style>
-  select {
-    padding: 8px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background-color: #f8f8f8;
-    cursor: pointer;
-  }
-  select:hover {
-    background-color: #e8e8e8;
-  }
-</style>
+
+
 
 <div>
   <h3>Team Teach Grades</h3>

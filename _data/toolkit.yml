@@ -1,0 +1,42 @@
+links:
+  - id: submissions
+    href: student/submissions
+    label: Submission Page
+    icon: images/toolkit-nav-buttons/submissions.png
+
+  - id: bathroom
+    href: hallpass 
+    label: Bathroom System
+    icon: images/toolkit-nav-buttons/bathroom.png
+    submenu:
+      - id: hallpass
+        href: hallpass
+        label: Hall Pass
+      - id: requestpass
+        href: hallpass/requestpass
+        label: Request Pass
+
+  - id: groups
+    href: student/groups
+    label: Group Page
+    icon: images/toolkit-nav-buttons/groups.png
+
+  - id: queue
+    href: student/queue
+    label: Screen Queue
+    icon: images/toolkit-nav-buttons/group-chat.png
+
+  - id: seed
+    href: student/seedtracker
+    label: Seed Tracker
+    icon: images/toolkit-nav-buttons/seedtracker.png
+
+  - id: grades
+    href: student/grades
+    label: Grade Viewer
+    icon: images/toolkit-nav-buttons/view-grades.png
+
+  - id: teachteach
+    href: student/TeamTeachToolkit/signup
+    label: Team Teach Toolkit
+    icon: images/toolkit-nav-buttons/sagai.png

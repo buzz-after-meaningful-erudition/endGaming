@@ -135,44 +135,72 @@ show_reading_time: false
  
 <script type="module">
   import { javaURI, pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
-window.signup = function(){
-    // clones and replaces method
-    const signupOptions = {
+window.signup = function () {
+    const signupButton = document.querySelector(".signup-card button");
+    // Disable the button and change its color
+    signupButton.disabled = true;
+    signupButton.style.backgroundColor = '#d3d3d3'; // Light gray to indicate disabled state
+
+    const signupData = {
+        email: document.getElementById("signupUid").value,
+        dob: "11-01-2024", // You can dynamically get this
+        name: document.getElementById("name").value,
+        password: document.getElementById("signupPassword").value,
+        kasmServerNeeded: document.getElementById("kasmNeeded").checked,
+    };
+
+    // First, make the request to the Python backend
+    const pythonSignupOptions = {
+        URL: `${pythonURI}/api/user`,
+        method: "POST",
+        cache: "no-cache",
+        headers: new Headers({
+            "Content-Type": "application/json"
+        }),
+        body: JSON.stringify(signupData),
+    };
+
+    // Second, make the request to the Java backend
+    const javaSignupOptions = {
         URL: `${javaURI}/api/person/create`,
         method: "POST",
         cache: "no-cache",
-        headers: (new Headers({"Content-Type":"application/json"})),
-        body: JSON.stringify({
-                email:  document.getElementById("signupUid").value,//later add to signup
-                dob: "11-01-2024",
-                name: document.getElementById("name").value,
-                password: document.getElementById("signupPassword").value,
-                kasmServerNeeded: document.getElementById("kasmNeeded").checked,
-            
+        headers: new Headers({
+            "Content-Type": "application/json"
         }),
+        body: JSON.stringify(signupData),
     };
-    // fetch the API
-    fetch(signupOptions.URL, signupOptions)
-    // response is a RESTful "promise" on any successful fetch
-    .then(response => {
-        
-      if (!response.ok){
-        throw new Error("response error: " + response.status);
-        return; //api failure
-      }
-      // valid response will have JSON data
-      response.json().then(data => {
-          console.log(data);
-      })
-    })
-    // catch fetch errors (ie Nginx ACCESS to server blocked)
-    .catch(err => {
-      error(err + " " + signupOptions.URL);
-    });
-  
-  }
+
+    // Perform the fetch to both servers in parallel using Promise.all
+    Promise.all([
+        fetch(pythonSignupOptions.URL, pythonSignupOptions),
+        fetch(javaSignupOptions.URL, javaSignupOptions),
+    ])
+        .then(responses => {
+            // Check if both requests were successful
+            return Promise.all(responses.map(response => {
+                if (!response.ok) {
+                    throw new Error(`Signup failed on one or both backends: ${response.status}`);
+                }
+                return response.json();
+            }));
+        })
+        .then(data => {
+            document.getElementById("signupMessage").textContent = "Signup successful on both backends!";
+            // Optionally redirect to the profile page or handle the response data as needed
+            // window.location.href = '{{site.baseurl}}/profile';
+        })
+        .catch(error => {
+            console.error("Signup Error:", error);
+            document.getElementById("signupMessage").textContent = `Signup Error: ${error.message}`;
+            // Re-enable the button if there is an error
+            signupButton.disabled = false;
+            signupButton.style.backgroundColor = ''; // Reset to default color
+        });
+};
+
   // Something went wrong with actions or responses
-  function error(err) {
+ function error(err) {
     // log as Error in console
     console.error(err);
     // append error to resultContainer
