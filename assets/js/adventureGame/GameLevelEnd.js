@@ -3,6 +3,7 @@ import BackgroundParallax from './GameEngine/BackgroundParallax.js';
 import Player from './GameEngine/Player.js';
 import Npc from './GameEngine/Npc.js';
 import Block from './Block.js';  // Import the Block class
+import Shark from './Shark.js';  // Import the Shark class
 
 class GameLevelEnd {
   constructor(gameEnv) {
@@ -110,7 +111,155 @@ class GameLevelEnd {
         },
         reaction: function() {
           alert(sprite_greet_dragon);
+        },
+        health: 100 // Add health property for the dragon
+    };
+    
+    // Shark enemy configuration - adapted from GameLevelWater
+    const sprite_src_shark = path + "/images/gamify/shark.png";
+    const sprite_data_shark = {
+        id: 'SharkEnemy',
+        greeting: "Dragon's Minion Shark",
+        src: sprite_src_shark,
+        SCALE_FACTOR: 4,  // Smaller scale factor than in water level
+        ANIMATION_RATE: 100,
+        pixels: {height: 100, width: 100},
+        INIT_POSITION: { x: width - 200, y: height - 200}, // Start near bottom right
+        orientation: {rows: 1, columns: 1},
+        down: {row: 0, start: 0, columns: 1},
+        hitbox: { widthPercentage: 0.3, heightPercentage: 0.3 },
+        zIndex: 9, // Just below dragon zIndex
+        
+        // Walking area around the dragon
+        walkingArea: {
+          xMin: width / 3,         // Left boundary 
+          xMax: (width * 2 / 3),   // Right boundary
+          yMin: height / 3,        // Top boundary
+          yMax: (height * 2 / 3)   // Bottom boundary
+        },
+        
+        // Speed and direction
+        speed: 3,
+        direction: { x: 1, y: 1 },
+        
+        // Target to protect (the dragon)
+        targetToProtect: sprite_data_dragon.INIT_POSITION,
+        
+        // Damage amount when colliding with player
+        damageAmount: 10,
+        
+        // Moves the shark and checks boundaries
+        updatePosition: function() {
+          // Update position based on direction and speed
+          this.INIT_POSITION.x += this.direction.x * this.speed;
+          this.INIT_POSITION.y += this.direction.y * this.speed;
+          
+          // Boundary checks to keep shark in walking area
+          if (this.INIT_POSITION.x <= this.walkingArea.xMin) {
+            this.INIT_POSITION.x = this.walkingArea.xMin;
+            this.direction.x = 1; // Change direction to right
+          }
+          if (this.INIT_POSITION.x >= this.walkingArea.xMax) {
+            this.INIT_POSITION.x = this.walkingArea.xMax;
+            this.direction.x = -1; // Change direction to left
+          }
+          if (this.INIT_POSITION.y <= this.walkingArea.yMin) {
+            this.INIT_POSITION.y = this.walkingArea.yMin;
+            this.direction.y = 1; // Change direction to down
+          }
+          if (this.INIT_POSITION.y >= this.walkingArea.yMax) {
+            this.INIT_POSITION.y = this.walkingArea.yMax;
+            this.direction.y = -1; // Change direction to up
+          }
+        },
+        
+        // Function to check collision with players
+        checkCollision: function(playerPosition, playerHitbox) {
+          // Calculate shark's hitbox dimensions
+          const sharkWidth = (this.pixels.width / this.SCALE_FACTOR) * this.hitbox.widthPercentage;
+          const sharkHeight = (this.pixels.height / this.SCALE_FACTOR) * this.hitbox.heightPercentage;
+          
+          // Calculate player's hitbox dimensions
+          const playerWidth = playerHitbox.width;
+          const playerHeight = playerHitbox.height;
+          
+          // Check if shark and player hitboxes overlap
+          if (
+            this.INIT_POSITION.x < playerPosition.x + playerWidth &&
+            this.INIT_POSITION.x + sharkWidth > playerPosition.x &&
+            this.INIT_POSITION.y < playerPosition.y + playerHeight &&
+            this.INIT_POSITION.y + sharkHeight > playerPosition.y
+          ) {
+            return true; // Collision detected
+          }
+          return false; // No collision
+        },
+        
+        // Function called when shark collides with a player
+        onCollision: function(player) {
+          // Create damage effect (visual feedback)
+          const damageEffect = document.createElement('div');
+          damageEffect.textContent = `-${this.damageAmount}`;
+          damageEffect.style.position = 'absolute';
+          damageEffect.style.color = 'red';
+          damageEffect.style.fontSize = '24px';
+          damageEffect.style.fontWeight = 'bold';
+          damageEffect.style.left = `${player.x}px`;
+          damageEffect.style.top = `${player.y}px`;
+          damageEffect.style.zIndex = '1000';
+          damageEffect.style.pointerEvents = 'none';
+          damageEffect.style.animation = 'fadeOut 1s forwards';
+          document.body.appendChild(damageEffect);
+          
+          // Add fadeOut animation if it doesn't exist
+          if (!document.getElementById('fadeOutAnimation')) {
+            const style = document.createElement('style');
+            style.id = 'fadeOutAnimation';
+            style.textContent = `
+              @keyframes fadeOut {
+                0% { opacity: 1; transform: translateY(0); }
+                100% { opacity: 0; transform: translateY(-20px); }
+              }
+            `;
+            document.head.appendChild(style);
+          }
+          
+          // Remove damage effect after animation completes
+          setTimeout(() => {
+            if (damageEffect.parentNode) {
+              damageEffect.parentNode.removeChild(damageEffect);
+            }
+          }, 1000);
+          
+          // Apply damage to player (assuming player has a health property)
+          if (player.health) {
+            player.health -= this.damageAmount;
+            // Check if player is defeated
+            if (player.health <= 0) {
+              console.log(`Player ${player.id} defeated by shark!`);
+              // Handle player defeat here if needed
+            }
+          }
+          
+          // Add a brief invulnerability period (implement as needed)
         }
+    };
+    
+    // Create multiple sharks with different starting positions and speeds
+    const shark_data_1 = { ...sprite_data_shark };
+    const shark_data_2 = { 
+      ...sprite_data_shark,
+      id: 'SharkEnemy2',
+      INIT_POSITION: { x: width - 300, y: 100 },
+      speed: 4,
+      direction: { x: -1, y: 1 }
+    };
+    const shark_data_3 = {
+      ...sprite_data_shark,
+      id: 'SharkEnemy3',
+      INIT_POSITION: { x: 200, y: height - 100 },
+      speed: 5,
+      direction: { x: 1, y: -1 }
     };
     
     this.classes = [
@@ -118,7 +267,10 @@ class GameLevelEnd {
       { class: GamEnvBackground, data: image_data_end },         // Then regular background
       { class: Player, data: sprite_data_chillguy },
       { class: Npc, data: sprite_data_dragon },
-      { class: Player, data: sprite_data_alex }
+      { class: Player, data: sprite_data_alex },
+      { class: Shark, data: shark_data_1 },  // Add first shark
+      { class: Shark, data: shark_data_2 },  // Add second shark
+      { class: Shark, data: shark_data_3 }   // Add third shark
     ];
     
     // Initialize single block reference
@@ -138,8 +290,14 @@ class GameLevelEnd {
     // Create instruction element
     this.instructionElement = this.createInstructions();
     
+    // Set up collision detection interval
+    this.setupCollisionDetection();
+    
     // Start the block animation loop
     this.startBlockAnimation();
+    
+    // Start shark movement
+    this.startSharkMovement();
   }
   
   // Create score display
@@ -175,7 +333,7 @@ class GameLevelEnd {
     instructionDisplay.style.fontSize = '16px';
     instructionDisplay.style.borderRadius = '5px';
     instructionDisplay.style.zIndex = '200';
-    instructionDisplay.textContent = 'Press Z to catch falling Eyes of Ender!';
+    instructionDisplay.textContent = 'Press Z to catch falling Eyes of Ender! Watch out for sharks!';
     document.body.appendChild(instructionDisplay);
     
     // Make instructions fade out after 5 seconds
@@ -185,6 +343,36 @@ class GameLevelEnd {
     }, 5000);
     
     return instructionDisplay;
+  }
+  
+  // Set up collision detection between sharks and players
+  setupCollisionDetection() {
+    this.collisionDetectionId = setInterval(() => {
+      // Find all shark and player instances
+      const sharks = this.gameEnv.gameObjects.filter(obj => obj.constructor.name === 'Shark');
+      const players = this.gameEnv.gameObjects.filter(obj => obj.constructor.name === 'Player');
+      
+      // Check for collisions
+      sharks.forEach(shark => {
+        players.forEach(player => {
+          // Only proceed if shark has checkCollision method
+          if (shark.sprite && shark.sprite.checkCollision && player.sprite) {
+            const isColliding = shark.sprite.checkCollision(
+              player.sprite.position,
+              {
+                width: (player.sprite.pixels.width / player.sprite.SCALE_FACTOR) * player.sprite.hitbox.widthPercentage,
+                height: (player.sprite.pixels.height / player.sprite.SCALE_FACTOR) * player.sprite.hitbox.heightPercentage
+              }
+            );
+            
+            // Handle collision
+            if (isColliding && shark.sprite.onCollision) {
+              shark.sprite.onCollision(player.sprite);
+            }
+          }
+        });
+      });
+    }, 100); // Check every 100ms
   }
   
   // Method to update score
@@ -200,6 +388,21 @@ class GameLevelEnd {
     setTimeout(() => {
       this.scoreElement.style.transform = 'scale(1)';
     }, 200);
+  }
+  
+  // Start shark movement
+  startSharkMovement() {
+    this.sharkMovementId = setInterval(() => {
+      // Get all shark instances
+      const sharks = this.gameEnv.gameObjects.filter(obj => obj.constructor.name === 'Shark');
+      
+      // Update position for each shark
+      sharks.forEach(shark => {
+        if (shark.sprite && shark.sprite.updatePosition) {
+          shark.sprite.updatePosition();
+        }
+      });
+    }, 100); // Update every 100ms
   }
   
   // Method to handle block spawning and animation
@@ -266,6 +469,16 @@ class GameLevelEnd {
     // Clear block spawner interval
     if (this.blockSpawnerId) {
       clearInterval(this.blockSpawnerId);
+    }
+    
+    // Clear collision detection interval
+    if (this.collisionDetectionId) {
+      clearInterval(this.collisionDetectionId);
+    }
+    
+    // Clear shark movement interval
+    if (this.sharkMovementId) {
+      clearInterval(this.sharkMovementId);
     }
     
     // Destroy current block if it exists
